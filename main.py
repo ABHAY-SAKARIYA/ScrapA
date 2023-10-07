@@ -200,6 +200,7 @@ class ScrapA:
         except Exception as e:
             rprint(f"[red bold] error occured provided url not found caused : {e}")
         
+    # to Capture Static and Multiple Page
 
     def __captureStaticMultiple(self):
         try:
@@ -233,8 +234,39 @@ class ScrapA:
             rprint(f"[red bold] error occured provided {userLinks} url not found caused : {e} ")
 
 
+# To Capture Dynamic Single Page Error In this function Not Getting Inside If And Else
+
+    def __captureDynamicSingle(self):
+        try:
+            driver = webdriver.Chrome(options=Options())
+
+            driver.get(self.url)
+
+            try:
+                rprint(f"[green bold]Successfuly Riched to website.[/green bold] \n [yellow] gathering data [/yellow]")
+                parser = BeautifulSoup(driver.page_source,"html.parser")
+                if self.userSelectorKey[0] == "css":
+                    for userReqEle in parser.select(self.selector[self.userSelectorKey[0]]):
+                        File.Html.write(filename=f"{self.filename}.html", data=f"{userReqEle.prettify()}",encoding=self.encoding)
+                        rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
+                else:
+                    for userReqEle in parser.select(self.selector[self.userSelectorKey[0]][0]):
+                        userReqEleByXpath = driver.find_element(By.XPATH,self.selector[self.userSelectorKey[0]][1])
+                        print(userReqEleByXpath,self.selector[self.userSelectorKey[0]][0])
+                        File.Html.write(filename=f"{self.filename}.html",data=userReqEleByXpath,encoding=self.encoding)
+                
+                
+                
+
+            except:
+                raise rprint(f"[red bold]{encodingErr()}[/red bold]")
+        except Exception as e:
+            rprint(f"[red bold] error occured provided {self.url} url not found caused : {e} ")
+
+
 
 check = ScrapA()
-selector = {"xpath":"body"}
-urllist = ["https://www.google.com","https://www.instagramm.com"]
-check.CaptureData(url=urllist,mode="m",captureType="static",filename="test",selector=selector)
+selector = {"xpath":["jainlibsearchbtn","//input[@name='jainlibsearchbtn']"]}
+urllist = "https://jainelibrary.org/"
+check.CaptureData(url=urllist,mode="s",captureType="dynamic",filename="test",selector=selector)
+
