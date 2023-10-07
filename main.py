@@ -16,48 +16,48 @@ class modeErr(Exception):
 
     def __init__(self,mode) -> None:
         self.mode = mode
-        self.message = f"You Have Entered The Wrong Mode {self.mode} \n Expecting 's' - for Single Page or 'm' for Multiple Page."
+        self.message = f"You Have Entered The Wrong Mode {self.mode} \n Expecting 's' - for Single Page or 'm' for Multiple Page. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 class captureErr(Exception):
 
     def __init__(self,captureType) -> None:
         self.captureType = captureType
-        self.message = f"You Have Entered Wrong Capture type {self.captureType} \n Expecting 'static' for static websites or 'dynamic' for dynamic websites."
+        self.message = f"You Have Entered Wrong Capture type {self.captureType} \n Expecting 'static' for static websites or 'dynamic' for dynamic websites. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 class selectorTypeErr(Exception):
 
     def __init__(self,selector) -> None:
         self.selector = selector
-        self.message = f"Wrong Selector type {self.selector} \n Expecting dict Not {type(self.selector)}."
+        self.message = f"Wrong Selector type {self.selector} \n Expecting dict Not {type(self.selector)}. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 class selectorKeyerr(Exception):
 
     def __init__(self, selector) -> None:
         self.selector = selector
-        self.message = f"Wrong Selector type {self.selector} \n Expecting 'css' or 'xpath'."
+        self.message = f"Wrong Selector type {self.selector} \n Expecting 'css' or 'xpath'. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 class staticUrlErr(Exception):
 
     def __init__(self, url) -> None:
         self.url = url
-        self.message = f"Wrong Url Provided {self.url} \n Expecting str got {type(self.url)}."
+        self.message = f"Wrong Url Provided {self.url} \n Expecting str got {type(self.url)}. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 class dynamicUrlErr(Exception):
 
     def __init__(self, url) -> None:
         self.url = url
-        self.message = f"Wrong Url Provided {self.url} \n Expecting list got {type(self.url)}."
+        self.message = f"Wrong Url Provided {self.url} \n Expecting list got {type(self.url)}. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 class encodingErr(Exception):
 
     def __init__(self) -> None:
-        self.message = "Error In The Encoding of The Webpage While Saving Data To Html File Try Adding 'encoding='utf-16'' To Resolve This Error And Re Run The Program."
+        self.message = "Error In The Encoding of The Webpage While Saving Data To Html File Try Adding 'encoding='utf-16'' To Resolve This Error And Re Run The Program. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 
@@ -189,6 +189,9 @@ class ScrapA:
                         for userReqEle in parser.select(self.selector[self.userSelectorKey[0]]):
                             File.Html.write(filename=f"{self.filename}.html", data=userReqEle.prettify(), encoding=self.encoding)
                             rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
+                    
+                    elif self.userSelectorKey[0] == "xpath":
+                        rprint("[red bold] Xpath Is Not Supported In Static captureType , Try It In Dynamic captureType  [/red bold]")
                 
                 else:
                     rprint(f"[red bold] Problem in riching to the given website exited with website status code:{response.status_code}[/red bold]")
@@ -198,6 +201,40 @@ class ScrapA:
             rprint(f"[red bold] error occured provided url not found caused : {e}")
         
 
+    def __captureStaticMultiple(self):
+        try:
+            count = 0
+            for userLinks in self.url:
+                response = requests.get(userLinks)
+
+                try:
+                    if response.status_code == 200:
+                        count+=1
+                        rprint(f"[green bold]Successfuly Riched {count} website from the given list.[/green bold] \n [yellow] gathering data [/yellow]")
+                    
+                        parser = BeautifulSoup(response.text,"html.parser")
+                        time.sleep(3)
+                        if self.userSelectorKey[0] == "css":
+                            File.Html.write(filename=f"{self.filename}.html", data=f"<!-- Website No. {count} starts from here url = '{userLinks}'-->\n", encoding=self.encoding)
+                            for userReqEle in parser.select(self.selector[self.userSelectorKey[0]]):
+                                File.Html.write(filename=f"{self.filename}.html", data=userReqEle.prettify(), encoding=self.encoding)
+                                rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
+
+                        elif self.userSelectorKey[0] == "xpath":
+                            rprint("[red bold] Xpath Is Not Supported In Static captureType , Try It In Dynamic captureType  [/red bold]")
+                            return
+                    
+                    else:
+                        rprint(f"[red bold] Problem in riching to the given website exited with website status code:{response.status_code}[/red bold]")
+                
+                except:
+                    raise rprint(f"[red bold]{encodingErr()}[/red bold]")
+        except Exception as e:
+            rprint(f"[red bold] error occured provided {userLinks} url not found caused : {e} ")
+
+
+
 check = ScrapA()
-selector = {"css":"body"}
-check.CaptureData(url="https://www.google.com",mode="s",captureType="static",filename="test",selector=selector)
+selector = {"xpath":"body"}
+urllist = ["https://www.google.com","https://www.instagramm.com"]
+check.CaptureData(url=urllist,mode="m",captureType="static",filename="test",selector=selector)
