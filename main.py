@@ -60,6 +60,11 @@ class encodingErr(Exception):
         self.message = "Error In The Encoding of The Webpage While Saving Data To Html File Try Adding 'encoding='utf-16'' To Resolve This Error And Re Run The Program. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
+class EleNotFoundErr(Exception):
+
+    def __init__(self,ele) -> None:
+        self.message = f"Element Your Have Given {ele} Not Found In The Given Webpage"
+        super().__init__(self.message)
 
 
 # creating File manager For Convient Handle of Files
@@ -185,27 +190,33 @@ class ScrapA:
                     parser = BeautifulSoup(response.text,"html.parser")
                     time.sleep(3)
                     if self.userSelectorKey[0] == "css":
-                        
-                        for userReqEle in parser.select(self.selector[self.userSelectorKey[0]]):
-                            File.Html.write(filename=f"{self.filename}.html", data=userReqEle.prettify(), encoding=self.encoding)
-                            rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
-                    
+                        try:
+                            for userReqEle in parser.select(self.selector[self.userSelectorKey[0]]):
+                                try:
+                                    File.Html.write(filename=f"{self.filename}.html", data=userReqEle.prettify(), encoding=self.encoding)
+                                except:
+                                    raise encodingErr()
+                                rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
+                        except:
+                            raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
                     elif self.userSelectorKey[0] == "xpath":
                         rprint("[red bold] Xpath Is Not Supported In Static captureType , Try It In Dynamic captureType  [/red bold]")
                 
                 else:
                     rprint(f"[red bold] Problem in riching to the given website exited with website status code:{response.status_code}[/red bold]")
-            except:
-                raise rprint(f"[red bold]{encodingErr()}[/red bold]")
+            except Exception as e:
+                raise rprint(f"[red bold]{e}[/red bold]")
         except Exception as e:
             rprint(f"[red bold] error occured provided url not found caused : {e}")
         
+
     # to Capture Static and Multiple Page
 
     def __captureStaticMultiple(self):
         try:
             count = 0
             for userLinks in self.url:
+                filesavemsg = f"\n<!-- Website No. {count} starts from here url = '{userLinks}'-->\n"
                 response = requests.get(userLinks)
 
                 try:
@@ -216,11 +227,31 @@ class ScrapA:
                         parser = BeautifulSoup(response.text,"html.parser")
                         time.sleep(3)
                         if self.userSelectorKey[0] == "css":
-                            File.Html.write(filename=f"{self.filename}.html", data=f"<!-- Website No. {count} starts from here url = '{userLinks}'-->\n", encoding=self.encoding)
-                            for userReqEle in parser.select(self.selector[self.userSelectorKey[0]]):
-                                File.Html.write(filename=f"{self.filename}.html", data=userReqEle.prettify(), encoding=self.encoding)
-                                rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
-
+                            if type(self.selector[self.userSelectorKey[0]]) == str:
+                                try:
+                                    File.Html.write(filename=f"{self.filename}.html", data=filesavemsg, encoding=self.encoding)
+                                    for userReqEle in parser.select(self.selector[self.userSelectorKey[0]]):
+                                        try:
+                                            File.Html.write(filename=f"{self.filename}.html", data=userReqEle.prettify(), encoding=self.encoding)
+                                        except:
+                                            raise encodingErr()
+                                        rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
+                                except:
+                                    raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
+                            elif type(self.selector[self.userSelectorKey[0]]) == list:
+                                try:
+                                    File.Html.write(filename=f"{self.filename}.html", data=filesavemsg, encoding=self.encoding)
+                                    while True:
+                                        for userReqEle in parser.select(self.selector[self.userSelectorKey[0]][count]):
+                                            try:
+                                                File.Html.write(filename=f"{self.filename}.html", data=userReqEle.prettify(), encoding=self.encoding)
+                                            except:
+                                                raise encodingErr()
+                                            rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
+                                        break
+                                except:
+                                    raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
+                                
                         elif self.userSelectorKey[0] == "xpath":
                             rprint("[red bold] Xpath Is Not Supported In Static captureType , Try It In Dynamic captureType  [/red bold]")
                             return
@@ -228,13 +259,14 @@ class ScrapA:
                     else:
                         rprint(f"[red bold] Problem in riching to the given website exited with website status code:{response.status_code}[/red bold]")
                 
-                except:
-                    raise rprint(f"[red bold]{encodingErr()}[/red bold]")
+                except Exception as e:
+                    raise rprint(f"[red bold]{e}[/red bold]")
+                count+=1
         except Exception as e:
             rprint(f"[red bold] error occured provided {userLinks} url not found caused : {e} ")
 
 
-# To Capture Dynamic Single Page Error In this function Not Getting Inside If And Else
+    # To Capture Dynamic Single Page 
 
     def __captureDynamicSingle(self):
         try:
@@ -246,27 +278,145 @@ class ScrapA:
                 rprint(f"[green bold]Successfuly Riched to website.[/green bold] \n [yellow] gathering data [/yellow]")
                 parser = BeautifulSoup(driver.page_source,"html.parser")
                 if self.userSelectorKey[0] == "css":
-                    for userReqEle in parser.select(self.selector[self.userSelectorKey[0]]):
-                        File.Html.write(filename=f"{self.filename}.html", data=f"{userReqEle.prettify()}",encoding=self.encoding)
-                        rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
+                    try:
+                        for userReqEle in parser.select(self.selector[self.userSelectorKey[0]]):
+                            try:
+                                File.Html.write(filename=f"{self.filename}.html", data=f"{userReqEle.prettify()}",encoding=self.encoding)
+                            except:
+                                raise encodingErr()
+                            rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
+                    except:
+                        raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
                 else:
-                    for userReqEle in parser.select(self.selector[self.userSelectorKey[0]][0]):
-                        userReqEleByXpath = driver.find_element(By.XPATH,self.selector[self.userSelectorKey[0]][1])
-                        print(userReqEleByXpath,self.selector[self.userSelectorKey[0]][0])
-                        File.Html.write(filename=f"{self.filename}.html",data=userReqEleByXpath,encoding=self.encoding)
-                
-                
-                
+                    if self.userSelectorKey[0] == "xpath":
+                        try:
+                            driver.page_source
+                            userReqEleDriver = driver.find_element(By.XPATH,self.selector[self.userSelectorKey[0]])
+                            userReqHtmlContent = userReqEleDriver.get_attribute("outerHTML")
+                            try:
+                                File.Html.write(filename=f"{self.filename}.html",data=userReqHtmlContent,encoding=self.encoding)
+                            except:
+                                raise encodingErr()
+                        except:
+                            raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
+                    else:
+                        rprint(f"[red bold] {selectorKeyerr(self.selector)}[/red bold]")
+                        return
 
-            except:
-                raise rprint(f"[red bold]{encodingErr()}[/red bold]")
+            except Exception as e:
+                raise rprint(f"[red bold]{e}[/red bold]")
         except Exception as e:
             rprint(f"[red bold] error occured provided {self.url} url not found caused : {e} ")
 
 
+    # To Capture Dynamic Multiple Page
+
+    def __captureDynamicMultiple(self):
+        try:
+            driver = webdriver.Chrome(options=Options())
+            count = 0
+            for links in self.url:
+                filesavemsg = f"\n <!--Data for link No.{count+1} and link = {links} --> \n"
+                driver.get(links)
+
+                try:
+                    rprint(f"[green] Reached To The Webpage No.{count}[/green] \n Gathering data")
+
+                    if self.userSelectorKey[0] == 'css':
+                        parser = BeautifulSoup(driver.page_source,"html.parser")
+                        if type(self.selector[self.userSelectorKey[0]]) == str:
+                            try:
+                                File.Html.write(filename=f"{self.filename}.html",data=filesavemsg)
+                                for userEle in parser.select(self.selector[self.userSelectorKey[0]]):
+                                    try:
+                                        File.Html.write(filename=f"{self.filename}.html",data=f"{userEle.prettify()}",encoding=self.encoding)
+                                    except:
+                                        raise encodingErr()
+                                    rprint("[green] data saved successfuly[/green]")
+                            except:
+                                raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
+                        elif type(self.selector[self.userSelectorKey[0]]) == list:
+                            try:
+                                File.Html.write(filename=f"{self.filename}.html",data=filesavemsg)
+                                while True:
+                                    for userEle in parser.select(self.selector[self.userSelectorKey[0]][count]):
+                                        try:
+                                            File.Html.write(filename=f"{self.filename}.html",data=f"{userEle.prettify()}",encoding=self.encoding)
+                                        except:
+                                            raise encodingErr()
+                                        rprint("[green] data saved successfuly[/green]")
+                                    break
+                            except:
+                                raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
+                    else:
+                        if self.userSelectorKey[0] == "xpath":
+                            if type(self.selector[self.userSelectorKey[0]]) == str:
+                                try:
+                                    driver.page_source
+                                    userReqEleDriver = driver.find_element(By.XPATH,self.selector[self.userSelectorKey[0]])
+                                    userReqHtmlContent = userReqEleDriver.get_attribute("outerHTML")
+                                    File.Html.write(filename=f"{self.filename}.html",data=filesavemsg)
+                                    try:
+                                        File.Html.write(filename=f"{self.filename}.html",data=userReqHtmlContent,encoding=self.encoding)
+                                    except:
+                                        raise encodingErr()
+                                except:
+                                    raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
+                            elif type(self.selector[self.userSelectorKey[0]]) == list:
+                                try:
+                                    driver.page_source
+                                    while True:
+                                        userReqEleDriver = driver.find_element(By.XPATH,self.selector[self.userSelectorKey[0]][count])
+                                        userReqHtmlContent = userReqEleDriver.get_attribute("outerHTML")
+                                        File.Html.write(filename=f"{self.filename}.html",data=filesavemsg)
+                                        try:
+                                            File.Html.write(filename=f"{self.filename}.html",data=userReqHtmlContent,encoding=self.encoding)
+                                        except:
+                                            raise encodingErr()
+                                        break
+                                except:
+                                    raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
+                            else:
+                                rprint("[red bold] Cannot Identify The Xpath[/red bold]")
+                                return
+                        else:
+                            rprint(f"[red bold] {selectorKeyerr(self.selector)}[/red bold]")
+                            return
+                except Exception as e:
+                    raise rprint(f"[red bold] Exception occured {e} [/red bold]")
+                count += 1
+        except Exception as e:
+            raise e
+        
+
+    # To Convert Gathered Data Into Other Forms Like CSV,EXCEL,JSON
+
+    def Filter(
+            self,
+            IF : str,
+            css : str
+    ) -> list:
+        
+        if "html" in IF:
+            userGivenData = File.Html.read(filename=IF,encoding="utf-8")
+        else:
+            raise rprint("[red bold] support only for html files [/red bold]")
+    
+        parser = BeautifulSoup(userGivenData,"html.parser")
+        userReqData = []
+        for ele in parser.select(css):
+            userReqData.append(ele.prettify())
+
+        return userReqData
+    
+    def get(self):
+        print(self)
+
 
 check = ScrapA()
-selector = {"xpath":["jainlibsearchbtn","//input[@name='jainlibsearchbtn']"]}
-urllist = "https://jainelibrary.org/"
-check.CaptureData(url=urllist,mode="s",captureType="dynamic",filename="test",selector=selector)
+# selector = {"css":["#faq-89","#faq-77"]}
+# urllist = ["https://jainelibrary.org/","https://jainelibrary.org/"]
+# check.CaptureData(url=urllist,mode="m",captureType="dynamic",filename="test",selector=selector)
 
+# a = check.Filter("test.html","a")
+# print(a)
