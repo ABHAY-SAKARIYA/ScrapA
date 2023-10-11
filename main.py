@@ -66,6 +66,12 @@ class EleNotFoundErr(Exception):
         self.message = f"Element Your Have Given {ele} Not Found In The Given Webpage"
         super().__init__(self.message)
 
+class GetErr(Exception):
+
+    def __init__(self) -> None:
+        self.message = "Error Get is Not Defined Firstly Use filter() method to resolve this error. \n Or Read The Documentation For More Details.."
+        super().__init__(self.message)
+
 
 # creating File manager For Convient Handle of Files
 
@@ -383,34 +389,67 @@ class ScrapA:
                             rprint(f"[red bold] {selectorKeyerr(self.selector)}[/red bold]")
                             return
                 except Exception as e:
-                    raise rprint(f"[red bold] Exception occured {e} [/red bold]")
+                    rprint(f"[red bold] Exception occured {e} [/red bold]")
+                    return
                 count += 1
         except Exception as e:
             raise e
         
 
-    # To Convert Gathered Data Into Other Forms Like CSV,EXCEL,JSON
+'''
+ This Is an Filter Class Which Will Take Filename Which created from running above code and 
+ take an css selector after that running parse() method it will filter the data according to 
+ css selector provided and save them and after that running Get() Method with an argument as an         
+ attribute of html and return the data get according to that attribute into a new variable,
+ Text() method will return the text inside of the html element filtered before using parse() method.
+'''
+class Filter:
 
-    def Filter(
-            self,
-            IF : str,
-            css : str
-    ) -> list:
+    def __init__(self,IF : str,css : str) -> None:
+        self._IF = IF
+        self._css = css
+    
+    def parse(self):
+        data = File.Html.read(filename=self._IF,encoding="utf=8")
+
+        parser = BeautifulSoup(data,"html.parser")
+        self._data = []
+        for ele in parser.select(self._css):
+            self._data.append(ele)
         
-        if "html" in IF:
-            userGivenData = File.Html.read(filename=IF,encoding="utf-8")
-        else:
-            raise rprint("[red bold] support only for html files [/red bold]")
+    def Get(self,attr):
+        try:
+            if type(self._data) == list:
+                self._reqData = []
+                for e in self._data:
+                    try:
+                        if e.get(attr) != None:
+                            self._reqData.append(e.get(attr))
+                        else:
+                            continue
+                    except Exception as e:
+                        raise e
+            elif type(self._data) == str:
+                if self._data != None:
+                    self._reqData = self._data.get(attr)
+                else:
+                    self._reqData = None
+            return self._reqData
+        except:
+            raise GetErr()
+        
     
-        parser = BeautifulSoup(userGivenData,"html.parser")
-        userReqData = []
-        for ele in parser.select(css):
-            userReqData.append(ele.prettify())
-
-        return userReqData
-    
-    def get(self):
-        print(self)
+    def Text(self):
+        try:
+            if type(self._data) == list:
+                self._text = []
+                for e in self._data:
+                    self._text.append(e.text)
+            elif type(self._data) == str:
+                self._text = self._data.text
+            return self._text
+        except:
+            raise GetErr()
 
 
 check = ScrapA()
@@ -418,5 +457,12 @@ check = ScrapA()
 # urllist = ["https://jainelibrary.org/","https://jainelibrary.org/"]
 # check.CaptureData(url=urllist,mode="m",captureType="dynamic",filename="test",selector=selector)
 
-# a = check.Filter("test.html","a")
-# print(a)
+# filt = Filter("test.html","a")
+# filt.parse()
+# a = filt.Get("target")
+# # print(a)
+# b = filt.Text()
+# # print(b)
+
+# data = {"link":a,"title":b}
+# print(data)
