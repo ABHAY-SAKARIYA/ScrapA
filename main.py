@@ -140,7 +140,7 @@ class ScrapA:
                     url : any,
                     captureType : str,
                     filename : str,
-                    selector : object,
+                    selector : dict,
                     encoding : str = "utf-8") :
         self.mode = mode
         self.url = url
@@ -396,15 +396,23 @@ class ScrapA:
             raise e
         
 
-'''
- This Is an Filter Class Which Will Take Filename Which created from running above code and 
- take an css selector after that running parse() method it will filter the data according to 
- css selector provided and save them and after that running Get() Method with an argument as an         
- attribute of html and return the data get according to that attribute into a new variable,
- Text() method will return the text inside of the html element filtered before using parse() method.
-'''
-class Filter:
 
+class Filter:
+    '''
+    This Is an Filter Class Which Will Take Filename Which created from running ScrapA() Method and 
+    take an css selector after that running parse() method it will filter the data according to 
+    css selector provided and save them and after that running Get() Method with an argument as an         
+    attribute of html and return the data get according to that attribute into a new variable,
+    Text() method will return the text inside of the html element filtered before using parse() method.
+
+    Eg:
+
+    filt = Filter("test.html","a") // get all the <a> tag inside test.html
+    
+    filt.parse()
+    filt.Get("href") // return href inside all the <a> tag : list
+    filt.Text() // return the text written inside the <a> tag : list
+    '''
     def __init__(self,IF : str,css : str) -> None:
         self._IF = IF
         self._css = css
