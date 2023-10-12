@@ -83,7 +83,7 @@ Now You Are Ready To Go...
 
 #### To Capture Single And Static WebPage Usign Css Selector
 
-```http
+```bash
   from scrapA import scrapA
   url = "url"
   selector = {'css':'div .class #id'}
@@ -91,7 +91,7 @@ Now You Are Ready To Go...
 ```
 #### To Capture Single And Dynamic WebPage Usign Css Selector
 
-```http
+```bash
   from scrapA import scrapA
   url = "url"
   selector = {'css':'div .class #id'}
@@ -99,7 +99,7 @@ Now You Are Ready To Go...
 ```
 #### To Capture Mutliple And Static WebPage Usign Css Selector
 
-```http
+```bash
   from scrapA import scrapA
   url = ["url","url"]
   selector = {'css':'div .class #id'}
@@ -107,7 +107,7 @@ Now You Are Ready To Go...
 ```
 #### To Capture Mutliple And static WebPage Usign xpath Selector
 
-```http
+```bash
   from scrapA import scrapA
   url = ["url","url"]
   selector = {'xpath':'//div[@class='class']'}
@@ -116,7 +116,7 @@ Now You Are Ready To Go...
 
 #### To Capture Mutliple And Dynamic WebPage Usign Css Selector
 
-```http
+```bash
   from scrapA import scrapA
   url = ["url","url"]
   selector = {'css':'div .class #id'}
@@ -127,7 +127,7 @@ Now You Are Ready To Go...
 
 #### To Capture Mutliple And Dynamic WebPage Usign xpath Selector
 
-```http
+```bash
   from scrapA import scrapA
   url = ["url","url"]
   selector = {'xpath':'//div[@class='class']'}
@@ -145,7 +145,7 @@ Now You Are Ready To Go...
 | `IF`      | `str` | **Required**. Input Filename Which Has The Html Output. |
 | `css`      | `str` | **Required**. Css selector through which the data could be filtered for eg if we want all the img tag from html then type `img` or class or id or any other attribute it has. |
 
-```http
+```bash
   from scrapA import Filter
   filt = Filter("Filename","css element") # find the element in the file provided
   
