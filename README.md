@@ -136,6 +136,26 @@ Now You Are Ready To Go...
   scrapA.captureData(url=url,selector=selector,mode='m',captureType="dynamic",filename="test",encoding="utf-8")
 ```
 
+### CaptureData Manually
+
+#### To Capture Data Manually Using ScrapAManual
+
+```bash
+  from scrapA import ScrapAManual
+  url = "url"
+  selector = {'selector':'value'} # selector can be any from one of these class, id, tag, xpath
+  ScrapAManual.Initialize() # this is required to initialize the scrapa web browser
+  ScrapAManual.Url(url) # pass the url of the webpage
+  ele = ScrapAManual.find_element(selector) # return the element you want from webpage in selenium type
+  ScrapAManual.html() # convert element you finded from selenium type to html 
+  #if you want to click any element then
+  ScrapAManual.Wait(5) # to wait for some second before going forward value in second.
+  clickele = ScrapAManual.find_element(selector)
+  ScrapA.click(clickele)
+```
+
+
+
 ### Filter Data
 
 
@@ -166,8 +186,4 @@ Please adhere to this project's `code of conduct`.
 
 If you have any feedback, please reach out to us at abhay.work233@gmail.com
 
-
-## Appendix
-
-Any additional information goes here
 
