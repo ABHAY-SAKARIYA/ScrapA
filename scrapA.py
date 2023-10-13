@@ -410,7 +410,7 @@ class scrapA:
 
 class ScrapAManual:
     '''
-    this is scrapAManual it is mainly used to do several task manully with your style.
+    this is ScrapAManual it is mainly used to do several task manully with your style.
 
     methods :-
 
