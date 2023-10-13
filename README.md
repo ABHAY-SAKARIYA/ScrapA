@@ -19,7 +19,7 @@ Want To Know How?? Get Started With Me.
 ## Features
 
 - Web Scraping Made Easy
-- Can Also Use To Download Data from Web Page (Still Pending)
+- Can Also Use To Download Data from Web Page 
 - Fast Working And Capable To Handle large Data
 - File Handling I/O Operations
 
