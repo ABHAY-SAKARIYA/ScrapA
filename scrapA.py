@@ -141,7 +141,7 @@ class File:
 
 # creating Web Scraper 
 
-class ScrapA:
+class scrapA:
 
     def __init__(self) -> None:
         pass
@@ -408,7 +408,7 @@ class ScrapA:
         
 
 
-class scrapAManual:
+class ScrapAManual:
     '''
     this is scrapAManual it is mainly used to do several task manully with your style.
 
