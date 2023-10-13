@@ -15,43 +15,43 @@ from rich import print as rprint
 class modeErr(Exception):
 
     def __init__(self,mode) -> None:
-        self.mode = mode
-        self.message = f"You Have Entered The Wrong Mode {self.mode} \n Expecting 's' - for Single Page or 'm' for Multiple Page. \n Or Read The Documentation For More Details.."
+        self._mode = mode
+        self.message = f"You Have Entered The Wrong Mode {self._mode} \n Expecting 's' - for Single Page or 'm' for Multiple Page. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 class captureErr(Exception):
 
     def __init__(self,captureType) -> None:
-        self.captureType = captureType
-        self.message = f"You Have Entered Wrong Capture type {self.captureType} \n Expecting 'static' for static websites or 'dynamic' for dynamic websites. \n Or Read The Documentation For More Details.."
+        self._captureType = captureType
+        self.message = f"You Have Entered Wrong Capture type {self._captureType} \n Expecting 'static' for static websites or 'dynamic' for dynamic websites. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 class selectorTypeErr(Exception):
 
     def __init__(self,selector) -> None:
-        self.selector = selector
-        self.message = f"Wrong Selector type {self.selector} \n Expecting dict Not {type(self.selector)}. \n Or Read The Documentation For More Details.."
+        self._selector = selector
+        self.message = f"Wrong Selector type {self._selector} \n Expecting dict Not {type(self._selector)}. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 class selectorKeyerr(Exception):
 
     def __init__(self, selector) -> None:
-        self.selector = selector
-        self.message = f"Wrong Selector type {self.selector} \n Expecting 'css' or 'xpath'. \n Or Read The Documentation For More Details.."
+        self._selector = selector
+        self.message = f"Wrong Selector type {self._selector} \n Expecting 'css' or 'xpath'. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 class staticUrlErr(Exception):
 
     def __init__(self, url) -> None:
-        self.url = url
-        self.message = f"Wrong Url Provided {self.url} \n Expecting str got {type(self.url)}. \n Or Read The Documentation For More Details.."
+        self._url = url
+        self.message = f"Wrong Url Provided {self._url} \n Expecting str got {type(self._url)}. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 class dynamicUrlErr(Exception):
 
     def __init__(self, url) -> None:
-        self.url = url
-        self.message = f"Wrong Url Provided {self.url} \n Expecting list got {type(self.url)}. \n Or Read The Documentation For More Details.."
+        self._url = url
+        self.message = f"Wrong Url Provided {self._url} \n Expecting list got {type(self._url)}. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
 class encodingErr(Exception):
@@ -72,6 +72,17 @@ class GetErr(Exception):
         self.message = "Error Get is Not Defined Firstly Use filter() method to resolve this error. \n Or Read The Documentation For More Details.."
         super().__init__(self.message)
 
+class initializeError(Exception):
+
+    def __init__(self) -> None:
+        self.message = "Scrapa is not initialized. initialize it first!!. \n Or Read The Documentation For More Details.."
+        super().__init__(self.message)
+
+class ElementNotFounderr(Exception):
+
+    def __init__(self) -> None:
+        self.message = "The Element You are trying To Find Not Found.. \n Or Read The Documentation For More Details.."
+        super().__init__(self.message)
 
 # creating File manager For Convient Handle of Files
 
@@ -142,44 +153,44 @@ class ScrapA:
                     filename : str,
                     selector : dict,
                     encoding : str = "utf-8") :
-        self.mode = mode
-        self.url = url
-        self.captureType = captureType
-        self.filename = filename
-        self.selector = selector
-        self.encoding = encoding
+        self._mode = mode
+        self._url = url
+        self._captureType = captureType
+        self._filename = filename
+        self._selector = selector
+        self._encoding = encoding
 
         # Prompting Errors Else Running Program
 
-        if type(self.selector) != dict:
-            raise selectorTypeErr(self.selector)
+        if type(self._selector) != dict:
+            raise selectorTypeErr(self._selector)
         
         reqSelectorKey = ["css","xpath"]
-        self.userSelectorKey = [x for x in self.selector.keys()]
-        if self.userSelectorKey[0] not in reqSelectorKey:
-            raise selectorKeyerr(self.userSelectorKey[0])
+        self._userSelectorKey = [x for x in self._selector.keys()]
+        if self._userSelectorKey[0] not in reqSelectorKey:
+            raise selectorKeyerr(self._userSelectorKey[0])
         
         reqMode = ["s","m"]
-        if self.mode not in reqMode:
-            raise modeErr(self.mode)
+        if self._mode not in reqMode:
+            raise modeErr(self._mode)
         
         reqCaptureType = ["static","dynamic"]
-        if self.captureType not in reqCaptureType:
-            raise captureErr(self.captureType)
+        if self._captureType not in reqCaptureType:
+            raise captureErr(self._captureType)
         
-        if self.mode == "s":
-            if type(self.url) != str:
-                raise staticUrlErr(type(self.url))
-            if self.captureType == "static":
+        if self._mode == "s":
+            if type(self._url) != str:
+                raise staticUrlErr(type(self._url))
+            if self._captureType == "static":
                 self.__captureStaticSingle()
-            elif self.captureType == "dynamic":
+            elif self._captureType == "dynamic":
                 self.__captureDynamicSingle()
-        elif self.mode == "m":
-            if type(self.url) != list:
-                raise dynamicUrlErr(type(self.url))
-            if self.captureType == "static":
+        elif self._mode == "m":
+            if type(self._url) != list:
+                raise dynamicUrlErr(type(self._url))
+            if self._captureType == "static":
                 self.__captureStaticMultiple()
-            elif self.captureType == "dynamic":
+            elif self._captureType == "dynamic":
                 self.__captureDynamicMultiple()
 
 
@@ -187,7 +198,7 @@ class ScrapA:
 
     def __captureStaticSingle(self):
         try:
-            response = requests.get(self.url)
+            response = requests.get(self._url)
                                     
             try :
                 if response.status_code == 200:
@@ -195,17 +206,17 @@ class ScrapA:
                 
                     parser = BeautifulSoup(response.text,"html.parser")
                     time.sleep(3)
-                    if self.userSelectorKey[0] == "css":
+                    if self._userSelectorKey[0] == "css":
                         try:
-                            for userReqEle in parser.select(self.selector[self.userSelectorKey[0]]):
+                            for userReqEle in parser.select(self._selector[self._userSelectorKey[0]]):
                                 try:
-                                    File.Html.write(filename=f"{self.filename}.html", data=userReqEle.prettify(), encoding=self.encoding)
+                                    File.Html.write(filename=f"{self._filename}.html", data=userReqEle.prettify(), encoding=self._encoding)
                                 except:
                                     raise encodingErr()
-                                rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
+                                rprint(f"[green bold] Data gathered Successfully and Saved To {self._filename}.html[/green bold]")
                         except:
-                            raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
-                    elif self.userSelectorKey[0] == "xpath":
+                            raise EleNotFoundErr(self._selector[self._userSelectorKey[0]])
+                    elif self._userSelectorKey[0] == "xpath":
                         rprint("[red bold] Xpath Is Not Supported In Static captureType , Try It In Dynamic captureType  [/red bold]")
                 
                 else:
@@ -221,7 +232,7 @@ class ScrapA:
     def __captureStaticMultiple(self):
         try:
             count = 0
-            for userLinks in self.url:
+            for userLinks in self._url:
                 filesavemsg = f"\n<!-- Website No. {count} starts from here url = '{userLinks}'-->\n"
                 response = requests.get(userLinks)
 
@@ -232,33 +243,33 @@ class ScrapA:
                     
                         parser = BeautifulSoup(response.text,"html.parser")
                         time.sleep(3)
-                        if self.userSelectorKey[0] == "css":
-                            if type(self.selector[self.userSelectorKey[0]]) == str:
+                        if self._userSelectorKey[0] == "css":
+                            if type(self._selector[self._userSelectorKey[0]]) == str:
                                 try:
-                                    File.Html.write(filename=f"{self.filename}.html", data=filesavemsg, encoding=self.encoding)
-                                    for userReqEle in parser.select(self.selector[self.userSelectorKey[0]]):
+                                    File.Html.write(filename=f"{self._filename}.html", data=filesavemsg, encoding=self._encoding)
+                                    for userReqEle in parser.select(self._selector[self._userSelectorKey[0]]):
                                         try:
-                                            File.Html.write(filename=f"{self.filename}.html", data=userReqEle.prettify(), encoding=self.encoding)
+                                            File.Html.write(filename=f"{self._filename}.html", data=userReqEle.prettify(), encoding=self._encoding)
                                         except:
                                             raise encodingErr()
-                                        rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
+                                        rprint(f"[green bold] Data gathered Successfully and Saved To {self._filename}.html[/green bold]")
                                 except:
-                                    raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
-                            elif type(self.selector[self.userSelectorKey[0]]) == list:
+                                    raise EleNotFoundErr(self._selector[self._userSelectorKey[0]])
+                            elif type(self._selector[self._userSelectorKey[0]]) == list:
                                 try:
-                                    File.Html.write(filename=f"{self.filename}.html", data=filesavemsg, encoding=self.encoding)
+                                    File.Html.write(filename=f"{self._filename}.html", data=filesavemsg, encoding=self._encoding)
                                     while True:
-                                        for userReqEle in parser.select(self.selector[self.userSelectorKey[0]][count]):
+                                        for userReqEle in parser.select(self._selector[self._userSelectorKey[0]][count]):
                                             try:
-                                                File.Html.write(filename=f"{self.filename}.html", data=userReqEle.prettify(), encoding=self.encoding)
+                                                File.Html.write(filename=f"{self._filename}.html", data=userReqEle.prettify(), encoding=self._encoding)
                                             except:
                                                 raise encodingErr()
-                                            rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
+                                            rprint(f"[green bold] Data gathered Successfully and Saved To {self._filename}.html[/green bold]")
                                         break
                                 except:
-                                    raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
+                                    raise EleNotFoundErr(self._selector[self._userSelectorKey[0]])
                                 
-                        elif self.userSelectorKey[0] == "xpath":
+                        elif self._userSelectorKey[0] == "xpath":
                             rprint("[red bold] Xpath Is Not Supported In Static captureType , Try It In Dynamic captureType  [/red bold]")
                             return
                     
@@ -278,41 +289,41 @@ class ScrapA:
         try:
             driver = webdriver.Chrome(options=Options())
 
-            driver.get(self.url)
+            driver.get(self._url)
 
             try:
                 rprint(f"[green bold]Successfuly Riched to website.[/green bold] \n [yellow] gathering data [/yellow]")
                 parser = BeautifulSoup(driver.page_source,"html.parser")
-                if self.userSelectorKey[0] == "css":
+                if self._userSelectorKey[0] == "css":
                     try:
-                        for userReqEle in parser.select(self.selector[self.userSelectorKey[0]]):
+                        for userReqEle in parser.select(self._selector[self._userSelectorKey[0]]):
                             try:
-                                File.Html.write(filename=f"{self.filename}.html", data=f"{userReqEle.prettify()}",encoding=self.encoding)
+                                File.Html.write(filename=f"{self._filename}.html", data=f"{userReqEle.prettify()}",encoding=self._encoding)
                             except:
                                 raise encodingErr()
-                            rprint(f"[green bold] Data gathered Successfully and Saved To {self.filename}.html[/green bold]")
+                            rprint(f"[green bold] Data gathered Successfully and Saved To {self._filename}.html[/green bold]")
                     except:
-                        raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
+                        raise EleNotFoundErr(self._selector[self._userSelectorKey[0]])
                 else:
-                    if self.userSelectorKey[0] == "xpath":
+                    if self._userSelectorKey[0] == "xpath":
                         try:
                             driver.page_source
-                            userReqEleDriver = driver.find_element(By.XPATH,self.selector[self.userSelectorKey[0]])
+                            userReqEleDriver = driver.find_element(By.XPATH,self._selector[self._userSelectorKey[0]])
                             userReqHtmlContent = userReqEleDriver.get_attribute("outerHTML")
                             try:
-                                File.Html.write(filename=f"{self.filename}.html",data=userReqHtmlContent,encoding=self.encoding)
+                                File.Html.write(filename=f"{self._filename}.html",data=userReqHtmlContent,encoding=self._encoding)
                             except:
                                 raise encodingErr()
                         except:
-                            raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
+                            raise EleNotFoundErr(self._selector[self._userSelectorKey[0]])
                     else:
-                        rprint(f"[red bold] {selectorKeyerr(self.selector)}[/red bold]")
+                        rprint(f"[red bold] {selectorKeyerr(self._selector)}[/red bold]")
                         return
 
             except Exception as e:
                 raise rprint(f"[red bold]{e}[/red bold]")
         except Exception as e:
-            rprint(f"[red bold] error occured provided {self.url} url not found caused : {e} ")
+            rprint(f"[red bold] error occured provided {self._url} url not found caused : {e} ")
 
 
     # To Capture Dynamic Multiple Page
@@ -321,72 +332,72 @@ class ScrapA:
         try:
             driver = webdriver.Chrome(options=Options())
             count = 0
-            for links in self.url:
+            for links in self._url:
                 filesavemsg = f"\n <!--Data for link No.{count+1} and link = {links} --> \n"
                 driver.get(links)
 
                 try:
                     rprint(f"[green] Reached To The Webpage No.{count}[/green] \n Gathering data")
 
-                    if self.userSelectorKey[0] == 'css':
+                    if self._userSelectorKey[0] == 'css':
                         parser = BeautifulSoup(driver.page_source,"html.parser")
-                        if type(self.selector[self.userSelectorKey[0]]) == str:
+                        if type(self._selector[self._userSelectorKey[0]]) == str:
                             try:
-                                File.Html.write(filename=f"{self.filename}.html",data=filesavemsg)
-                                for userEle in parser.select(self.selector[self.userSelectorKey[0]]):
+                                File.Html.write(filename=f"{self._filename}.html",data=filesavemsg)
+                                for userEle in parser.select(self._selector[self._userSelectorKey[0]]):
                                     try:
-                                        File.Html.write(filename=f"{self.filename}.html",data=f"{userEle.prettify()}",encoding=self.encoding)
+                                        File.Html.write(filename=f"{self._filename}.html",data=f"{userEle.prettify()}",encoding=self._encoding)
                                     except:
                                         raise encodingErr()
                                     rprint("[green] data saved successfuly[/green]")
                             except:
-                                raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
-                        elif type(self.selector[self.userSelectorKey[0]]) == list:
+                                raise EleNotFoundErr(self._selector[self._userSelectorKey[0]])
+                        elif type(self._selector[self._userSelectorKey[0]]) == list:
                             try:
-                                File.Html.write(filename=f"{self.filename}.html",data=filesavemsg)
+                                File.Html.write(filename=f"{self._filename}.html",data=filesavemsg)
                                 while True:
-                                    for userEle in parser.select(self.selector[self.userSelectorKey[0]][count]):
+                                    for userEle in parser.select(self._selector[self._userSelectorKey[0]][count]):
                                         try:
-                                            File.Html.write(filename=f"{self.filename}.html",data=f"{userEle.prettify()}",encoding=self.encoding)
+                                            File.Html.write(filename=f"{self._filename}.html",data=f"{userEle.prettify()}",encoding=self._encoding)
                                         except:
                                             raise encodingErr()
                                         rprint("[green] data saved successfuly[/green]")
                                     break
                             except:
-                                raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
+                                raise EleNotFoundErr(self._selector[self._userSelectorKey[0]])
                     else:
-                        if self.userSelectorKey[0] == "xpath":
-                            if type(self.selector[self.userSelectorKey[0]]) == str:
+                        if self._userSelectorKey[0] == "xpath":
+                            if type(self._selector[self._userSelectorKey[0]]) == str:
                                 try:
                                     driver.page_source
-                                    userReqEleDriver = driver.find_element(By.XPATH,self.selector[self.userSelectorKey[0]])
+                                    userReqEleDriver = driver.find_element(By.XPATH,self._selector[self._userSelectorKey[0]])
                                     userReqHtmlContent = userReqEleDriver.get_attribute("outerHTML")
-                                    File.Html.write(filename=f"{self.filename}.html",data=filesavemsg)
+                                    File.Html.write(filename=f"{self._filename}.html",data=filesavemsg)
                                     try:
-                                        File.Html.write(filename=f"{self.filename}.html",data=userReqHtmlContent,encoding=self.encoding)
+                                        File.Html.write(filename=f"{self._filename}.html",data=userReqHtmlContent,encoding=self._encoding)
                                     except:
                                         raise encodingErr()
                                 except:
-                                    raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
-                            elif type(self.selector[self.userSelectorKey[0]]) == list:
+                                    raise EleNotFoundErr(self._selector[self._userSelectorKey[0]])
+                            elif type(self._selector[self._userSelectorKey[0]]) == list:
                                 try:
                                     driver.page_source
                                     while True:
-                                        userReqEleDriver = driver.find_element(By.XPATH,self.selector[self.userSelectorKey[0]][count])
+                                        userReqEleDriver = driver.find_element(By.XPATH,self._selector[self._userSelectorKey[0]][count])
                                         userReqHtmlContent = userReqEleDriver.get_attribute("outerHTML")
-                                        File.Html.write(filename=f"{self.filename}.html",data=filesavemsg)
+                                        File.Html.write(filename=f"{self._filename}.html",data=filesavemsg)
                                         try:
-                                            File.Html.write(filename=f"{self.filename}.html",data=userReqHtmlContent,encoding=self.encoding)
+                                            File.Html.write(filename=f"{self._filename}.html",data=userReqHtmlContent,encoding=self._encoding)
                                         except:
                                             raise encodingErr()
                                         break
                                 except:
-                                    raise EleNotFoundErr(self.selector[self.userSelectorKey[0]])
+                                    raise EleNotFoundErr(self._selector[self._userSelectorKey[0]])
                             else:
                                 rprint("[red bold] Cannot Identify The Xpath[/red bold]")
                                 return
                         else:
-                            rprint(f"[red bold] {selectorKeyerr(self.selector)}[/red bold]")
+                            rprint(f"[red bold] {selectorKeyerr(self._selector)}[/red bold]")
                             return
                 except Exception as e:
                     rprint(f"[red bold] Exception occured {e} [/red bold]")
@@ -395,6 +406,92 @@ class ScrapA:
         except Exception as e:
             raise e
         
+
+
+class scrapAManual:
+    '''
+    this is scrapAManual it is mainly used to do several task manully with your style.
+
+    methods :-
+
+    Initialize() - used to initialize the scrapa web browser if you are downloading something you can also 
+                    provide location of download or else default location is download folder.
+
+    Url()        - used to provide url of website.
+
+    find_element() - used to find element in webpage using several css selectors.
+
+    click()      - used to click the element which is finded using find_element() method.
+
+    html()      - used to convert the elements into html.
+
+    wait()  - used to wait for several time before running next method.
+    '''
+
+    def __init__(self) -> None:
+        pass
+        
+    def Initialize(self,Location : str = None) -> None:
+        self._Location = Location
+        if self._Location == None:
+            self._scrapaWebBrowser = webdriver.Chrome(options=Options())
+        else:
+            op = webdriver.ChromeOptions()
+            param = {"download.default_directory":self._Location,
+                    "safebrowsing.enabled":"false",
+                    "plugins.always_open_pdf_externally":True}
+            op.add_experimental_option("prefs",param)
+            self._scrapaWebBrowser = webdriver.Chrome(options=op)
+
+    def Url(self,url : str) -> None:
+        self._url = url
+        try:
+            self._scrapaWebBrowser.get(self._url)
+            self._parser = BeautifulSoup(self._scrapaWebBrowser.page_source,"html.parser")
+        except:
+            raise initializeError()
+
+
+    def Wait(self,wait : int) -> None:
+        time.sleep(wait)
+  
+
+    def find_element(self,selector : dict):
+        self._selector = selector
+        self._selectorKeys = [x for x in self._selector.keys()]
+        try:
+            self._scrapaWebBrowser.find_element(By.TAG_NAME,"title")
+        except:
+            raise initializeError()
+        try:
+            if self._selector != None:
+                if self._selectorKeys[0] == 'class':
+                    self._findElementDriver = self._scrapaWebBrowser.find_element(By.CLASS_NAME,self._selector[self._selectorKeys[0]])
+                elif self._selectorKeys[0] == 'id':
+                    self._findElementDriver = self._scrapaWebBrowser.find_element(By.ID,self._selector[self._selectorKeys[0]])
+                elif self._selectorKeys[0] == 'tag':
+                    self._findElementDriver = self._scrapaWebBrowser.find_element(By.TAG_NAME,self._selector[self._selectorKeys[0]])
+                elif self._selectorKeys[0] == 'xpath':
+                    self._findElementDriver = self._scrapaWebBrowser.find_element(By.XPATH,self._selector[self._selectorKeys[0]])
+            return self._findElementDriver
+        except:
+            raise ElementNotFounderr()
+
+
+    def Click(self,element):
+        try:
+            element.click()
+        except:
+            raise initializeError()
+
+
+    def html(self):
+        try:
+            self._ConvertToHtml = self._findElementDriver.get_attribute("outerHTML")
+            return self._ConvertToHtml
+        except:
+            raise initializeError()
+
 
 
 class Filter:
@@ -460,17 +557,3 @@ class Filter:
             raise GetErr()
 
 
-check = ScrapA()
-# selector = {"css":["#faq-89","#faq-77"]}
-# urllist = ["https://jainelibrary.org/","https://jainelibrary.org/"]
-# check.CaptureData(url=urllist,mode="m",captureType="dynamic",filename="test",selector=selector)
-
-# filt = Filter("test.html","a")
-# filt.parse()
-# a = filt.Get("target")
-# # print(a)
-# b = filt.Text()
-# # print(b)
-
-# data = {"link":a,"title":b}
-# print(data)
